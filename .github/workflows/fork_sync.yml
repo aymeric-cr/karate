@@ -17,7 +17,7 @@ jobs:
       uses: aormsby/Fork-Sync-With-Upstream-action@main 
       with:
         upstream_sync_repo: karatelabs/karate
-        upstream_repo_access_token: ${{ secrets.GITHUB_TOKEN }}
+        target_repo_token: ${{ secrets.GITHUB_TOKEN }}
         upstream_sync_branch: develop
         target_sync_branch: develop
         upstream_pull_args: --ff-only

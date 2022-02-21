@@ -21,6 +21,6 @@ jobs:
         upstream_sync_branch: develop
         target_sync_branch: develop
         upstream_pull_args: --ff-only
-        test_mode: True
+          #        test_mode: True
     - name: Timestamp
       run: date

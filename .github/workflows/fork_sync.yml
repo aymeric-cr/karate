@@ -16,10 +16,10 @@ jobs:
       id: sync-develop
       uses: aormsby/Fork-Sync-With-Upstream-action@main 
       with:
-        upstream_repository: karatelabs/karate
-        upstream_branch: develop
-        target_branch: develop
-        git_pull_args: --ff-only
-        # git_push_args: --force
+        upstream_sync_repo: karatelabs/karate
+        upstream_sync_token: ${{ secrets.GITHUB_TOKEN }}
+        upstream_sync_branch: develop
+        target_sync_branch: develop
+        upstream_pull_args: --ff-only
     - name: Timestamp
       run: date

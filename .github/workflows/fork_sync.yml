@@ -1,0 +1,25 @@
+name: "Fork Sync"
+on:
+  schedule:
+    - cron:  '0 */2 * * *'
+  workflow_dispatch:
+jobs:
+  sync-master:
+    runs-on: ubuntu-latest
+    name: "Sync develop branch from karatelabs repo"
+    steps:
+    - name: "Checkout: develop"
+      uses: actions/checkout@v2
+      with:
+        ref: develop
+    - name: "Update: develop"
+      id: sync-develop
+      uses: alevern/Fork-Sync-With-Upstream-action@fork-sync
+      with:
+        upstream_repository: karatelabs/karate
+        upstream_branch: develop
+        target_branch: develop
+        git_pull_args: --ff-only
+        # git_push_args: --force
+    - name: Timestamp
+      run: date

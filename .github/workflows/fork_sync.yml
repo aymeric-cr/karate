@@ -20,7 +20,7 @@ jobs:
         target_repo_token: ${{ secrets.GITHUB_TOKEN }}
         upstream_sync_branch: develop
         target_sync_branch: develop
-        upstream_pull_args: --rebase
+        upstream_pull_args: '-s recursive -Xours'#--rebase
           #        test_mode: True
     - name: Timestamp
       run: date

@@ -34,11 +34,11 @@ jobs:
         export PATH=~/.local/bin:$PATH
         set -x
         launchable verify
-        launchable record build --name $GITHUB_RUN_ID --source src=.
+        launchable record build --name $GITHUB_RUN_ID-$GITHUB_SHA --source src=.
     - name: build with maven
       run: mvn -B clean test -Dmaven.test.failure.ignore=true
     - name: Send test results to launchable
       env:
         LAUNCHABLE_TOKEN: ${{ secrets.LAUNCHABLE_TOKEN }}
       run: |
-        launchable record tests --build $GITHUB_RUN_ID maven ./karate-junit4/target/surefire-reports ./karate-robot/target/surefire-reports ./karate-core/target/surefire-reports ./karate-junit5/target/surefire-reports ./karate-mock-servlet/target/surefire-reports ./karate-demo/target/surefire-reports
+        launchable record tests --build $GITHUB_RUN_ID-$GITHUB_SHA maven ./karate-junit4/target/surefire-reports ./karate-robot/target/surefire-reports ./karate-core/target/surefire-reports ./karate-junit5/target/surefire-reports ./karate-mock-servlet/target/surefire-reports ./karate-demo/target/surefire-reports

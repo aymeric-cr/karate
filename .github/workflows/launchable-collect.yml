@@ -1,10 +1,8 @@
 name: launchable-collect
 
 on:
-  push:
-    branches: [ master, develop ]
-  pull_request:
-    branches: [ develop ]
+  schedule:
+    - cron:  '0 */2 * * *'
   workflow_dispatch:
 
 jobs:
@@ -13,7 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: git checkout
-      uses: actions/checkout@v2    
+      uses: actions/checkout@v3
+      with:
+        ref: develop
+    - name: upstream fetch check
+      id: upstreamfc
+      run: |
+        SHA=$(git rev-parse --verify HEAD)
+        if [[ "$(cat current_sha.txt)" != "$SHA" ]] 
+        then 
+          echo $(cat current_sha.txt) " different than " $SHA
+          echo '::set-output name=upstream_changes::1'
+        else 
+          echo $(cat current_sha.txt) " same as " $SHA
+          echo '::set-output name=upstream_changes::0'
+        fi
+    - name: cancel if no changes
+      uses: andymckay/cancel-action@0.2
+      if: steps.upstreamfc.outputs.upstream_changes == 0
+    - name: Should run tests?
+      run: test "${{ steps.upstreamfc.outputs.upstream_changes }}" = 1
     - uses: actions/setup-python@v2
     - name: set up jdk 11
       uses: actions/setup-java@v2
@@ -42,3 +59,14 @@ jobs:
         LAUNCHABLE_TOKEN: ${{ secrets.LAUNCHABLE_TOKEN }}
       run: |
         launchable record tests --build $GITHUB_RUN_ID-$GITHUB_SHA maven ./karate-junit4/target/surefire-reports ./karate-robot/target/surefire-reports ./karate-core/target/surefire-reports ./karate-junit5/target/surefire-reports ./karate-mock-servlet/target/surefire-reports ./karate-demo/target/surefire-reports
+    - name: update sha file
+      run: echo $(git rev-parse --verify HEAD) > current_sha.txt
+    - name: stage commit sha
+      run: |
+        git add current_sha.txt
+    - name: Commit & Push updated sha file
+      uses: actions-js/push@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        message: "update commit sha file"
+        branch: "develop"

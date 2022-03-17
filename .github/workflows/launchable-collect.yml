@@ -14,10 +14,11 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: develop
+        fetch-depth: 2
     - name: upstream fetch check
       id: upstreamfc
       run: |
-        SHA=$(git rev-parse --verify HEAD)
+        SHA=$(git rev-parse HEAD~)
         if [[ "$(cat current_sha.txt)" != "$SHA" ]] 
         then 
           echo $(cat current_sha.txt) " different than " $SHA
